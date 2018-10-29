@@ -39,7 +39,7 @@ public class WelcomeController {
 
 		String response = restTemplate.getForObject(url, String.class);
 
-		return String.format("%s, have a nice day!", response);
+		return String.format("%s, Java nice day!", response);
 	}
 
 }
