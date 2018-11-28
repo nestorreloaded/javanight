@@ -1,14 +1,13 @@
 package com.endava.javanight.view;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
@@ -31,13 +30,10 @@ public class WelcomeController {
 
 		InstanceInfo instanceInfo = usersApp.getInstances().get(0);
 
-		// Get URL to call endpoint
-		List<String> toConcatenate = Arrays.asList("http://", instanceInfo.getIPAddr(), ":",
-				new Integer(instanceInfo.getPort()).toString(), "/hello/?name=", name);
+		UriComponents uri = UriComponentsBuilder.fromHttpUrl("http://{host}:{port}/hello/?name={name}")
+				.buildAndExpand(instanceInfo.getIPAddr(), instanceInfo.getPort(), name);
 
-		String url = String.join("", toConcatenate);
-
-		String response = restTemplate.getForObject(url, String.class);
+		String response = restTemplate.getForObject(uri.toUriString(), String.class);
 
 		return String.format("%s, Java nice day!", response);
 	}
